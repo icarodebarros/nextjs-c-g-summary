@@ -1,28 +1,39 @@
+import { MongoClient, ObjectId } from 'mongodb';
+
 import MeetupDetail from '../../components/meetups/MeetupDetail';
 
-function MeetupDetails() {
+function MeetupDetails(props) {
   // const router = useRouter();
   // console.log(router.query.meetupId)
 
   return <MeetupDetail
-    image='https://www.flytap.com/-/media/Flytap/destinations/Suggestions/Lead/Recife-e-Olinda-Irmas-Banhadas-pelo-Atlantico_1920x1036.jpg?h=1036&w=1920&la=pt-BR&hash=E031D88F3DF632A4A2097567FF38422FACA8A26B'
-    title='Meetup Title'
-    address='Meetup Address'
-    description='Meetup Description'
+    image={props.meetupData.image}
+    title={props.meetupData.title}
+    address={props.meetupData.address}
+    description={props.meetupData.description}
   />;
 }
 
 export async function getStaticPaths() { // since this is a dynamic page (path), we need this func to describe all possible meetupId values!
+  const client = await MongoClient.connect(
+    'mongodb+srv://<username>:<password>@cluster0.gafjw.mongodb.net/meetups?retryWrites=true&w=majority'
+  );
+  const db = client.db();
+  const meetupsCollection = db.collection('meetups');
+  const meetupsResult = await meetupsCollection.find({}, { _id: 1 }).toArray();
+  client.close();
+
   return {
     fallback: false, // false => should then list all possibilities. true => list some paths (most popular) to pre-rendering
-    paths: [
-      {
-        params: { meetupId: 'm1' },
-      },
-      {
-        params: { meetupId: 'm2' },
-      }
-    ]
+    paths: meetupsResult.map(meetup => ({ params: { meetupId: meetup._id.toString() } }))
+    // paths: [
+    //   {
+    //     params: { meetupId: 'm1' },
+    //   },
+    //   {
+    //     params: { meetupId: 'm2' },
+    //   }
+    // ]
   }
 }
 
@@ -30,16 +41,22 @@ export async function getStaticProps(context) {
   // fetch API data
 
   const { meetupId } = context.params;
-  console.log(meetupId);
+
+  const client = await MongoClient.connect(
+    'mongodb+srv://<username>:<password>@cluster0.gafjw.mongodb.net/meetups?retryWrites=true&w=majority'
+  );
+  const db = client.db();
+  const meetupsCollection = db.collection('meetups');
+  const selectedMeetup = await meetupsCollection.findOne({ _id: ObjectId(meetupId) });
+  client.close();
 
   return {
     props: {
       meetupData: {
-        id: meetupId,
-        image: 'https://www.flytap.com/-/media/Flytap/destinations/Suggestions/Lead/Recife-e-Olinda-Irmas-Banhadas-pelo-Atlantico_1920x1036.jpg?h=1036&w=1920&la=pt-BR&hash=E031D88F3DF632A4A2097567FF38422FACA8A26B',
-        title: 'Meetup Title',
-        address: 'Meetup Address',
-        description: 'Meetup Description'
+        id: selectedMeetup._id.toString(),
+        title: selectedMeetup.title,
+        address: selectedMeetup.address,
+        image: selectedMeetup.image
       }
     }
   }
