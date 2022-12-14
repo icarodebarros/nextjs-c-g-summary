@@ -1,18 +1,28 @@
 import { ObjectId } from 'mongodb';
 import clientPromise from '../../lib/mongodb';
 
+import { Fragment } from 'react';
 import MeetupDetail from '../../components/meetups/MeetupDetail';
+import Head from 'next/head';
 
 function MeetupDetails(props) {
   // const router = useRouter();
   // console.log(router.query.meetupId)
 
-  return <MeetupDetail
-    image={props.meetupData.image}
-    title={props.meetupData.title}
-    address={props.meetupData.address}
-    description={props.meetupData.description}
-  />;
+  return (
+    <Fragment>
+      <Head>
+        <title>{props.meetupData.title}</title>
+        <meta name='description' content={props.meetupData.description} />
+      </Head>
+      <MeetupDetail
+        image={props.meetupData.image}
+        title={props.meetupData.title}
+        address={props.meetupData.address}
+        description={props.meetupData.description}
+      />
+    </Fragment>
+  );
 }
 
 export async function getStaticPaths() { // since this is a dynamic page (path), we need this func to describe all possible meetupId values!

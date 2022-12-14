@@ -1,19 +1,22 @@
 //import { MongoClient } from 'mongodb'; // since this is a backend dep, dext will remove from bundle
 import clientPromise from '../lib/mongodb';
 
+import Head from 'next/head';
+import { Fragment } from 'react';
+
 import MeetupList from '../components/meetups/MeetupList';
 
 function HomePage(props) {
-  // const [loadedMeetups, setLoadedMeetups] = useState([]);
 
-  // useEffect(() => {
-  //   // send http req
-  //   setLoadedMeetups(DUMMY_MEETUPS);
-  // }, []);
-
-  // return <MeetupList meetups={loadedMeetups} />;
-
-  return <MeetupList meetups={props.meetups} />;
+  return (
+    <Fragment>
+      <Head>
+        <title>React Meetups</title>
+        <meta name='description' content='Browse a huge list of highly active React meetups!' />
+      </Head> 
+      <MeetupList meetups={props.meetups} />;
+    </Fragment>
+  );
 }
 
 /* PRE-RENDERING: Static Site Generation (SSG) */
