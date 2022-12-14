@@ -1,24 +1,6 @@
-import { useEffect, useState } from 'react';
-import MeetupList from '../components/meetups/MeetupList';
+import { MongoClient } from 'mongodb'; // since this is a backend dep, dext will remove from bundle
 
-const DUMMY_MEETUPS = [
-  {
-    id: 'm1',
-    title: 'A First Meetup',
-    image:
-      'https://www2.recife.pe.gov.br/sites/default/files/styles/imagem_slide_home/public/sol.jpg',
-    address: 'Some address 5, 12345 Some City',
-    description: 'This is a first meetup!',
-  },
-  {
-    id: 'm2',
-    title: 'A Second Meetup',
-    image:
-      'https://cdn.folhape.com.br/img/pc/1100/1/dn_arquivo/2022/03/dondinho-seturl-30.jpg',
-    address: 'Some address 10, 54321 Some City',
-    description: 'This is a second meetup!',
-  },
-];
+import MeetupList from '../components/meetups/MeetupList';
 
 function HomePage(props) {
   // const [loadedMeetups, setLoadedMeetups] = useState([]);
@@ -36,10 +18,27 @@ function HomePage(props) {
 /* PRE-RENDERING: Static Site Generation (SSG) */
 export async function getStaticProps() { // Code that runs only in the server
   // fetch data from an API
+
+  const client = await MongoClient.connect(
+    'mongodb+srv://<username>:<password>@cluster0.gafjw.mongodb.net/meetups?retryWrites=true&w=majority'
+  );
+  const db = client.db();
+
+  const meetupsCollection = db.collection('meetups');
+  const result = await meetupsCollection.find().toArray();
+  
+  const meetups = result.map(meetup => ({
+    title: meetup.title,
+    address: meetup.address,
+    image: meetup.image,
+    id: meetup._id.toString()
+  }));  
+
+  client.close();
   
   return { // object created on the build/deployment
     props: {
-      meetups: DUMMY_MEETUPS
+      meetups: meetups
     },
     revalidate: 10 // seconds to refresh this obj data
   }
