@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import MeetupList from '../components/meetups/MeetupList';
 
 const DUMMY_MEETUPS = [
@@ -19,7 +20,29 @@ const DUMMY_MEETUPS = [
   },
 ];
 
-function HomePage() {
-  return <MeetupList meetups={DUMMY_MEETUPS} />;
+function HomePage(props) {
+  // const [loadedMeetups, setLoadedMeetups] = useState([]);
+
+  // useEffect(() => {
+  //   // send http req
+  //   setLoadedMeetups(DUMMY_MEETUPS);
+  // }, []);
+
+  // return <MeetupList meetups={loadedMeetups} />;
+
+  return <MeetupList meetups={props.meetups} />;
 }
+
+/* PRE-RENDERING: Static Site Generation (SSG) */
+export async function getStaticProps() { // Code that runs only in the server
+  // fetch data from an API
+  
+  return { // object created on the build/deployment
+    props: {
+      meetups: DUMMY_MEETUPS
+    },
+    revalidate: 10 // seconds to refresh this obj data
+  }
+}
+
 export default HomePage;
