@@ -34,7 +34,7 @@ function HomePage(props) {
 }
 
 /* PRE-RENDERING: Static Site Generation (SSG) */
-export async function getStaticProps() { // Code that runs only in the server
+/*export async function getStaticProps() { // Code that runs only in the server
   // fetch data from an API
   
   return { // object created on the build/deployment
@@ -42,6 +42,20 @@ export async function getStaticProps() { // Code that runs only in the server
       meetups: DUMMY_MEETUPS
     },
     revalidate: 10 // seconds to refresh this obj data
+  }
+}*/
+
+/* PRE-RENDERING: Server-side Rendering (SSR) */
+export async function getServerSideProps(context) { // Code that runs only in the server
+  const { req, res } = context; // should only use SSR when you need access to the request prop and/or
+  // when you need fresh data for every request. 
+  
+  // fetch data from an API
+  
+  return { // object created for every request!
+    props: {
+      meetups: DUMMY_MEETUPS
+    }
   }
 }
 
