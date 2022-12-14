@@ -1,4 +1,5 @@
-import { MongoClient } from 'mongodb'; // since this is a backend dep, dext will remove from bundle
+//import { MongoClient } from 'mongodb'; // since this is a backend dep, dext will remove from bundle
+import clientPromise from '../lib/mongodb';
 
 import MeetupList from '../components/meetups/MeetupList';
 
@@ -19,22 +20,16 @@ function HomePage(props) {
 export async function getStaticProps() { // Code that runs only in the server
   // fetch data from an API
 
-  const client = await MongoClient.connect(
-    'mongodb+srv://<username>:<password>@cluster0.gafjw.mongodb.net/meetups?retryWrites=true&w=majority'
-  );
-  const db = client.db();
-
+  const client = await clientPromise;
+  const db = client.db('meetups');
   const meetupsCollection = db.collection('meetups');
-  const result = await meetupsCollection.find().toArray();
-  
+  const result = await meetupsCollection.find().toArray();  
   const meetups = result.map(meetup => ({
     title: meetup.title,
     address: meetup.address,
     image: meetup.image,
     id: meetup._id.toString()
-  }));  
-
-  client.close();
+  })); 
   
   return { // object created on the build/deployment
     props: {
