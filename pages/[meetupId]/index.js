@@ -33,7 +33,10 @@ export async function getStaticPaths() { // since this is a dynamic page (path),
   const meetupsResult = await meetupsCollection.find({}, { _id: 1 }).toArray();
 
   return {
-    fallback: false, // false => should then list all possibilities. true => list some paths (most popular) to pre-rendering
+    fallback: 'blocking', /* false => should then list all possibilities. 
+                        true => list some paths (most popular) to pre-rendering. When paths not listed: immediate blank page, then rendering.
+                        'blocking' => similar to 'true'. When paths not listed: user will not see anything until new page data is ready.
+                        */
     paths: meetupsResult.map(meetup => ({ params: { meetupId: meetup._id.toString() } }))
     // paths: [
     //   {
