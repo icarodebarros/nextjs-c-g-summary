@@ -2,6 +2,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
 import NewMeetupForm from '../../components/meetups/NewMeetupForm';
+import NoSSRWrapper from '../../components/util/NoSSRWrapper';
 
 function newMeetupPage() {
   const router = useRouter();
@@ -26,7 +27,10 @@ function newMeetupPage() {
       <Head>
         <title>Add a New Meetup </title>
       </Head>
-      <NewMeetupForm onAddMeetup={addMeetupHandler} />
+
+      <NoSSRWrapper>
+        <NewMeetupForm onAddMeetup={addMeetupHandler} />
+      </NoSSRWrapper>
     </Fragment>
   );
 }
